@@ -55,7 +55,7 @@
 			if (_sendEvent)
 			{
 				_sendEvent = false;
-				SendLocation(_currentLocation);
+				SendLocationEvent();
 			}
 		}
 

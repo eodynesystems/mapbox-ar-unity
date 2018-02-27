@@ -23,7 +23,7 @@ namespace Mapbox.Unity.Location
 		AbstractLocationProvider _transformLocationProvider;
 
 		[SerializeField]
-		bool _dontDestroyOnLoad;
+		AbstractLocationProvider _fixedLocationProvider;
 
 		/// <summary>
 		/// The singleton instance of this factory.
@@ -107,6 +107,17 @@ namespace Mapbox.Unity.Location
 		}
 
 		/// <summary>
+		/// Returns the serialized <see cref="T:Mapbox.Unity.Location.SyncronizationPointsManager"/>
+		/// </summary>
+		public ILocationProvider FixedLocationProvider
+		{
+			get
+			{
+				return _fixedLocationProvider;
+			}
+		}
+
+		/// <summary>
 		/// Create singleton instance and inject the DefaultLocationProvider upon initialization of this component. 
 		/// </summary>
 		private void Awake()
@@ -117,11 +128,7 @@ namespace Mapbox.Unity.Location
 				return;
 			}
 			Instance = this;
-
-			if (_dontDestroyOnLoad)
-			{
-				DontDestroyOnLoad(gameObject);
-			}
+			DontDestroyOnLoad(gameObject);
 
 			InjectEditorLocationProvider();
 			InjectDeviceLocationProvider();

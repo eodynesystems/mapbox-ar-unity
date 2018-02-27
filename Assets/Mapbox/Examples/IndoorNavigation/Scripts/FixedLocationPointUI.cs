@@ -13,7 +13,7 @@
 
 		[SerializeField]
 		public Transform contentPanel;
-
+        
 		public void RegisterUI(int id, string label, Action<int> callback, string type = null)
 		{
 			if (buttonPrefab != null)
@@ -21,8 +21,8 @@
 				var syncButtonGO = Instantiate(buttonPrefab);
 				syncButtonGO.transform.SetParent(contentPanel, false);
 
-				var syncButton = syncButtonGO.GetComponent<SyncLocationInteraction>();
-				syncButton.Register(id, label, callback, type);
+		//		var syncButton = syncButtonGO.GetComponent<SyncLocationInteraction>();
+		//		syncButton.Register(id, label, callback, type);
 
 			}
 		}
