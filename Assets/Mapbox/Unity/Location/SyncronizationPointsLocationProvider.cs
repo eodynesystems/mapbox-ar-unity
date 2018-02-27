@@ -44,7 +44,9 @@ namespace Mapbox.Unity.Location
 
 		public void Register(IFixedLocation locationProvider)
 		{
-			Enqueue(locationProvider);
+			Enqueue(locationProvider);            
+            
+
 		}
 
 		private void Update()
@@ -67,9 +69,12 @@ namespace Mapbox.Unity.Location
 
 		public void OnSyncRequested(int id)
 		{
-			Debug.Log("Pressed button");
-			SendLocation(_syncronizationPoints[id].CurrentLocation);
-			ApplicationUIManager.Instance.OnStateChanged(ApplicationState.SyncPoint_Calibration);
+			Debug.Log("setting location to initialization point");
+            var location = new FixedLocationData();
+            location.SetLocation(0, "initial position", "initialization position", new Utils.Vector2d(41.399384, 2.192985), 42.84f);
+            SendLocation(location.CurrentLocation);
+            LocationProviderFactory.Instance.DefaultLocationProvider = this;
+			//ApplicationUIManager.Instance.OnStateChanged(ApplicationState.SyncPoint_Calibration);
 		}
 	}
 }

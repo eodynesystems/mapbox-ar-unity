@@ -155,5 +155,15 @@ namespace Mapbox.Unity.Location
 			UnityEngine.Debug.Log("LocationProviderFactory: " + "Injected DEVICE Location Provider");
 			DefaultLocationProvider = _deviceLocationProvider;
 		}
-	}
+
+
+        /// <summary>
+        /// Injects the Synchronization point location provider.        
+        /// </summary>        
+        public void InjectSynchronizationPointsLocationProvider()
+        {
+            UnityEngine.Debug.Log("LocationProviderFactory: " + "Injected DEVICE Location Provider");
+            DefaultLocationProvider = _fixedLocationProvider;
+        }
+    }
 }
