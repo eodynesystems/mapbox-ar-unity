@@ -21,17 +21,17 @@ namespace Mapbox.Unity.Ar
 		[SerializeField]
 		AbstractAlignmentStrategy _alignmentStrategy;
 
-		[SerializeField]
-		float _synchronizationBias = 1f;
+		//[SerializeField]
+		public float _synchronizationBias = 1f;
 
-		[SerializeField]
-		float _arTrustRange = 10f;
+		//[SerializeField]
+		public float _arTrustRange = 10f;
 
-		[SerializeField]
-		float _minimumDeltaDistance = 2f;
+		//[SerializeField]
+		public float _minimumDeltaDistance = 2f;
 
-		[SerializeField]
-		float _minimumDesiredAccuracy = 5f;
+		//[SerializeField]
+		public float _minimumDesiredAccuracy = 5f;
 
 		SimpleAutomaticSynchronizationContext _synchronizationContext;
 

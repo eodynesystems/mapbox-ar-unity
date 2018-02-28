@@ -6,14 +6,14 @@ namespace Mapbox.Unity.Ar
 
 	public class AverageHeadingAlignmentStrategy : AbstractAlignmentStrategy
 	{
-		[SerializeField]
-		int _maxSamples = 5;
+		//[SerializeField]
+		public int _maxSamples = 5;
 
-		[SerializeField]
-		float _ignoreAngleThreshold = 15f;
+		//[SerializeField]
+		public float _ignoreAngleThreshold = 15f;
 
-		[SerializeField]
-		float _lerpSpeed;
+		//[SerializeField]
+		public float _lerpSpeed;
 
 		List<float> _rotations = new List<float>();
 

@@ -11,11 +11,11 @@
 		[SerializeField]
 		private Transform _targetTransform;
 
-		[SerializeField]
-		private int _visibleBuffer;
+		//[SerializeField]
+		public int _visibleBuffer;
 
-		[SerializeField]
-		private int _disposeBuffer;
+		//[SerializeField]
+		public int _disposeBuffer;
 
 		private bool _initialized = false;
 		private UnwrappedTileId _currentTile;
