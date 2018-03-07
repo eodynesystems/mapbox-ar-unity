@@ -34,6 +34,7 @@
 		/// 0 represents full trust in AR, but no trust in GPS.
 		/// 1 represents full trust in GPS position, but no trust in AR.
 		/// </summary>
+		[Tooltip("The synchronization bias. 0 represents full trust in AR, but no trust in GPS. 1 represents full trust in GPS position, but no trust in AR.")]
 		public float SynchronizationBias = 1f;
 
 		/// <summary>
@@ -41,12 +42,14 @@
 		/// must differ before new nodes can be added.
 		/// This is to prevent micromovements in AR from being registered if GPS updates wildly for some reason.
 		/// </summary>
+		[Tooltip("The minimum distance that BOTH gps and ar delta vectors (since last nodes added) must differ before new nodes can be added. This is to prevent micromovements in AR from being registered if GPS updates wildly for some reason.")]
 		public float MinimumDeltaDistance;
 
 		/// <summary>
 		/// Use automatic synchronization bias.
 		/// This will use ArTrustRange and Location Accuracy to determine bias.
 		/// </summary>
+		[Tooltip("Use automatic synchronization bias. This will use ArTrustRange and Location Accuracy to determine bias.")]
 		public bool UseAutomaticSynchronizationBias;
 
 		/// <summary>
@@ -54,6 +57,7 @@
 		/// AR is great for local position changes, but poor over great distance.
 		/// As a node approaches the radius, GPS will generally be favored (assuming location accuracy is high).
 		/// </summary>
+		[Tooltip("The AR trust radius. Essentially, this is how far we will trust AR to report accurate postions. AR is great for local position changes, but poor over great distance. As a node approaches the radius, GPS will generally be favored (assuming location accuracy is high).")]
 		public float ArTrustRange;
 
 		/// <summary>
@@ -85,7 +89,7 @@
 				// Perhaps more drift, but also more stable?
 				if (_currentArVector.magnitude < MinimumDeltaDistance || _currentAbsoluteGpsVector.magnitude < MinimumDeltaDistance)
 				{
-					Unity.Utilities.Console.Instance.Log("Minimum movement not yet met (arDelta: "+ _currentArVector.magnitude + ", gpsDelta: "+ _currentAbsoluteGpsVector.magnitude + ")", "red");
+					Unity.Utilities.Console.Instance.Log("Minimum movement not yet met (arDelta: " + _currentArVector.magnitude + ", gpsDelta: " + _currentAbsoluteGpsVector.magnitude + ")", "red");
 					return;
 				}
 
@@ -132,18 +136,30 @@
 			_position = (delta * bias) + originOffset;
 
 #if UNITY_EDITOR
-			Debug.Log("AR Vector: " + _currentArVector);
-			Debug.Log("GPS Vector: " + _currentAbsoluteGpsVector);
-			Debug.Log("HEADING:" + rotation);
-			Debug.Log("Relative GPS Vector: " + relativeGpsVector);
-			Debug.Log("BIAS: " + bias);
-			Debug.Log("DISTANCE: " + deltaDistance);
-			Debug.Log("OFFSET: " + originOffset);
-			Debug.Log("BIASED DELTA: " + delta);
-			Debug.Log("OFFSET: " + _position);
+			Debug.LogFormat(
+				"AR Vector:{0} GPS Vector:{1} HEADING:{2} HDOP:{3} Relative GPS Vector:{4} BIAS:{5} DISTANCE:{6} OFFSET:{7} BIASED DELTA:{8} OFFSET:{8}"
+				, _currentArVector
+				, _currentAbsoluteGpsVector
+				, rotation
+				, accuracy
+				, relativeGpsVector
+				, bias
+				, deltaDistance
+				, originOffset
+				, delta
+				, _position
+			);
 #endif
-			Unity.Utilities.Console.Instance.Log(string.Format("Offset: {0},\tHeading: {1},\tDisance: {2},\tBias: {3}",
-															   _position, _rotation, deltaDistance, bias), "orange");
+			Unity.Utilities.Console.Instance.Log(
+				string.Format(
+					"Offset: {0},\tHeading: {1},\tDisance: {2},\tBias: {3}"
+					, _position
+					, _rotation
+					, deltaDistance
+					, bias
+				)
+				, "orange"
+			);
 
 			var alignment = new Alignment();
 			alignment.Rotation = _rotation;

@@ -231,7 +231,7 @@ namespace Mapbox.Unity.MeshGeneration.Data
 			}
 
 			MeshRenderer.material.mainTexture = _rasterData;
-			RasterDataState = TilePropertyState.Loaded;
+            RasterDataState = TilePropertyState.Loaded;
 			OnRasterDataChanged(this);
 		}
 

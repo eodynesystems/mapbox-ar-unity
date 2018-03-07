@@ -38,7 +38,12 @@ namespace Mapbox.Unity.Map
 		[SerializeField]
 		protected string _latitudeLongitudeString;
 
-		public int AbsoluteZoom
+        public Vector2d GetLatLon()
+        {
+            return Conversions.StringToLatLon(_latitudeLongitudeString);
+        }
+
+        public int AbsoluteZoom
 		{
 			get
 			{

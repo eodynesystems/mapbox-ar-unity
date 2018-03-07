@@ -21,22 +21,26 @@ namespace Mapbox.Unity.Ar
 		[SerializeField]
 		AbstractAlignmentStrategy _alignmentStrategy;
 
-		[SerializeField]
-		float _synchronizationBias = 1f;
+		//[SerializeField]
+		public float _synchronizationBias = 1f;
 
-		[SerializeField]
-		float _arTrustRange = 10f;
+		//[SerializeField]
+		public float _arTrustRange = 10f;
 
-		[SerializeField]
-		float _minimumDeltaDistance = 2f;
+		//[SerializeField]
+		public float _minimumDeltaDistance = 2f;
 
-		[SerializeField]
-		float _minimumDesiredAccuracy = 5f;
+		//[SerializeField]
+		public float _minimumDesiredAccuracy = 5f;
 
 		SimpleAutomaticSynchronizationContext _synchronizationContext;
 
 		float _lastHeading;
 		float _lastHeight;
+
+		// TODO: move to "base" class SimpleAutomaticSynchronizationContext
+		// keep it here for now as map position is also calculated here
+		private KalmanLatLong _kalman = new KalmanLatLong(3); // very fast walking
 
 		ILocationProvider _locationProvider;
 
@@ -49,7 +53,15 @@ namespace Mapbox.Unity.Ar
 				if (_locationProvider == null)
 				{
 #if UNITY_EDITOR
-					_locationProvider = LocationProviderFactory.Instance.TransformLocationProvider;
+					Debug.LogWarningFormat("SimpleAutomaticSynchronizationContextBehaviour, isRemoteConnected:{0}", UnityEditor.EditorApplication.isRemoteConnected);
+					if (!UnityEditor.EditorApplication.isRemoteConnected)
+					{
+						_locationProvider = LocationProviderFactory.Instance.TransformLocationProvider;
+					}
+					else
+					{
+						_locationProvider = LocationProviderFactory.Instance.DefaultLocationProvider;
+					}
 #else
 					_locationProvider = LocationProviderFactory.Instance.DefaultLocationProvider;
 #endif
@@ -104,7 +116,7 @@ namespace Mapbox.Unity.Ar
 		void PlaneAddedHandler(BoundedPlane plane)
 		{
 			_lastHeight = plane.center.y;
-			Unity.Utilities.Console.Instance.Log(string.Format("AR Plane Height: {0}", _lastHeight), "yellow");
+			//Unity.Utilities.Console.Instance.Log(string.Format("AR Plane Height: {0}", _lastHeight), "yellow");
 		}
 
 		//void UnityARSessionNativeInterface_ARSessionTrackingChanged(UnityEngine.XR.iOS.UnityARCamera camera)
@@ -114,9 +126,29 @@ namespace Mapbox.Unity.Ar
 
 		void LocationProvider_OnLocationUpdated(Location location)
 		{
+			string gpsLog = string.Format(
+				"{1} locationUpdated:{2} headingUpdated:{3}{0}GPS accuracy:{4:0.0}{0}heading(truenorth):{5:0.0}{0}heading(magnetic):{6:0.0}{0}heading accuracy:{7:0.0}{0}{8:0.00000} / {9:0.00000}"
+				, Environment.NewLine
+				, location.Timestamp
+				, location.IsLocationUpdated
+				, location.IsHeadingUpdated
+				, location.Accuracy
+				, location.Heading
+				, location.HeadingMagnetic
+				, location.HeadingAccuracy
+				, location.LatitudeLongitude.x
+				, location.LatitudeLongitude.y
+			);
+			Unity.Utilities.Console.Instance.LogGps(gpsLog);
+
 			if (location.IsLocationUpdated)
 			{
-				if (location.Accuracy > _minimumDesiredAccuracy) //With this line, we can control accuracy of Gps updates. 
+				// With this line, we can control accuracy of Gps updates. 
+				// Be aware that we only get location information if it previously met
+				// the conditions of DeviceLocationProvider:
+				// * desired accuarracy in meters
+				// * and update distance in meters
+				if (location.Accuracy > _minimumDesiredAccuracy)
 				{
 					Unity.Utilities.Console.Instance.Log(
 						string.Format(
@@ -129,6 +161,16 @@ namespace Mapbox.Unity.Ar
 				}
 				else
 				{
+					_kalman.Process(
+						location.LatitudeLongitude.x
+						, location.LatitudeLongitude.y
+						, location.Accuracy
+						, (long)location.Timestamp
+					);
+					location.LatitudeLongitude.x = _kalman.Lat;
+					location.LatitudeLongitude.y = _kalman.Lng;
+					location.Accuracy = (int)_kalman.Accuracy;
+
 					var latitudeLongitude = location.LatitudeLongitude;
 					Unity.Utilities.Console.Instance.Log(
 						string.Format(
@@ -142,6 +184,18 @@ namespace Mapbox.Unity.Ar
 
 					var position = Conversions.GeoToWorldPosition(latitudeLongitude, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz();
 					_synchronizationContext.AddSynchronizationNodes(location, position, _arPositionReference.localPosition);
+
+					string positionLog = string.Format(
+						"location:{1}{0}latlng:{2}{0}centerMerc:{3}{0}relScale:{4}{0}pos:{5}{0}arPosRef:{6}"
+						, Environment.NewLine
+						, location.IsLocationUpdated
+						, latitudeLongitude
+						, _map.CenterMercator
+						, _map.WorldRelativeScale
+						, position
+						, _arPositionReference.localPosition
+					);
+					Unity.Utilities.Console.Instance.LogPosition(positionLog);
 				}
 
 
