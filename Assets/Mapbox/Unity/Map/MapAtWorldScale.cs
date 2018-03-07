@@ -20,7 +20,9 @@ namespace Mapbox.Unity.Map
 			var referenceTileRect = Conversions.TileBounds(TileCover.CoordinateToTileId(_centerLatitudeLongitude, AbsoluteZoom));
 			_centerMercator = referenceTileRect.Center;
 
-			_worldRelativeScale = _useRelativeScale ? Mathf.Cos(Mathf.Deg2Rad * (float)_centerLatitudeLongitude.x) : 1f;
+			//hack to try to get tiles to display at proper scale with ARKit
+			_worldRelativeScale = 1.674581f; 
+			//_useRelativeScale ? Mathf.Cos(Mathf.Deg2Rad * (float)_centerLatitudeLongitude.x) : 1f;
 
 			_mapVisualizer.Initialize(this, _fileSource);
 			_tileProvider.Initialize(this);
