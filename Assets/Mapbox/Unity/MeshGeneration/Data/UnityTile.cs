@@ -231,8 +231,6 @@ namespace Mapbox.Unity.MeshGeneration.Data
 			}
 
 			MeshRenderer.material.mainTexture = _rasterData;
-            if (TextureToFile.instance.saveTexture)
-                TextureToFile.SaveTextureToFile(_rasterData, TextureToFile.instance.path + "texture" + TextureToFile.textureID + ".png");
             RasterDataState = TilePropertyState.Loaded;
 			OnRasterDataChanged(this);
 		}
